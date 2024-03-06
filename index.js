@@ -56,7 +56,7 @@ app.get(
       // select all users by default
       let filteredUsers = users
 
-      // read the sanitized query data from "req"
+      // read the matched query data from "req"
       const data = matchedData(req)
       const search = data.search
       if (search !== undefined) {
@@ -77,14 +77,15 @@ app.get(
 
 app.post(
   "/api/v1/users",
-  body("fullName").notEmpty(),
+  body("fullName").trim().notEmpty(),
   body("email").isEmail().withMessage("Not a valid e-mail address"),
   body("age").isInt({ min: 18 }),
   (req, res) => {
     // extract the data validation result
     const result = validationResult(req)
     if (result.isEmpty()) {
-      const newUser = req.body
+      // read the matched body data from "req"
+      const newUser = matchedData(req)
       const maxId = users.reduce(
         (max, user) => (user.id > max ? user.id : max),
         0
